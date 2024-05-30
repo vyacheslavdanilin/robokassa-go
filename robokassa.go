@@ -89,7 +89,7 @@ func (p *Payment) GetPaymentUrl(ctx context.Context, paymentType string) (string
 
 func (p *Payment) GetPaymentRecurringParams() (map[string]interface{}, error) {
 	p.data["SignatureValue"] = p.getSignValue()
-	return mergeMaps(p.data, p.customParams), nil
+	return mergeMaps(p.data, convertMapStringToInterface(p.customParams)), nil
 }
 
 func (p *Payment) getSignValue() string {
@@ -279,12 +279,20 @@ func (p *Payment) SetRecurring() *Payment {
 	return p
 }
 
-func mergeMaps(m1, m2 map[string]interface{}) map[string]interface{} {
+func mergeMaps(m1 map[string]interface{}, m2 map[string]interface{}) map[string]interface{} {
 	result := make(map[string]interface{}, len(m1)+len(m2))
 	for k, v := range m1 {
 		result[k] = v
 	}
 	for k, v := range m2 {
+		result[k] = v
+	}
+	return result
+}
+
+func convertMapStringToInterface(m map[string]string) map[string]interface{} {
+	result := make(map[string]interface{}, len(m))
+	for k, v := range m {
 		result[k] = v
 	}
 	return result
